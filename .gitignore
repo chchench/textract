@@ -1,0 +1,4 @@
+.DS_Store
+temp/
+main.go
+textract.code-workspace
