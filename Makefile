@@ -7,7 +7,7 @@ test: build
 	@echo "***** UNIT TESTS NOT YET PROVIDED *****"
 
 clean:
-	rm -f ./tools/{dumpdocx, x2t-docx}
+	rm -f ./tools/{dumpdocx,x2t-docx}
 	rm -rf ./output
 
 .PHONY: all build test clean
