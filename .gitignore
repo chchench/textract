@@ -2,3 +2,4 @@
 temp/
 main.go
 textract.code-workspace
+output-pptx/

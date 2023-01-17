@@ -60,7 +60,7 @@ func main() {
 		mf.Close()
 	}
 
-	fmt.Printf("Program finished successfully")
+	fmt.Println("Program finished successfully")
 }
 
 func createDir(dp string) {
