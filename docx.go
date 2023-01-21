@@ -1,5 +1,5 @@
 // package extract
-package main
+package textract
 
 import (
 	"encoding/xml"

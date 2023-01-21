@@ -1,9 +1,14 @@
 // package extract
-package main
+package textract
 
 import (
 	"archive/zip"
+	"fmt"
 	"io"
+	"net/http"
+	"os"
+	"path/filepath"
+	"strings"
 )
 
 type DocumentParser interface {
@@ -42,12 +47,13 @@ func extractArchiveContent(path string, filter Filter) (*[]MemberFileContent, er
 		if err != nil {
 			return nil, err
 		}
-		defer mf.Close()
 
 		buf, err := io.ReadAll(mf)
 		if err != nil {
 			return nil, err
 		}
+
+		mf.Close()
 
 		mfc := &MemberFileContent{
 			Identifier: f.Name,
@@ -58,4 +64,42 @@ func extractArchiveContent(path string, filter Filter) (*[]MemberFileContent, er
 	}
 
 	return &list, nil
+}
+
+func getTrueFileType(fp string) (string, error) {
+
+	f, err := os.Open(fp)
+	if err != nil {
+		return "", err
+	}
+	defer f.Close()
+
+	buf := make([]byte, 512)
+	_, err = f.Read(buf)
+	if err != nil {
+		return "", err
+	}
+
+	return http.DetectContentType(buf), nil
+}
+
+func getFileExtension(filename string) string {
+	return strings.ToLower(filepath.Ext(filename))
+}
+
+func fatalExit(msg string) {
+	fmt.Fprintln(os.Stderr, msg)
+	os.Exit(1)
+}
+
+func dump(path, content string) {
+	f, err := os.Create(path)
+	if err != nil {
+		fatalExit(err.Error())
+	}
+	defer f.Close()
+
+	if _, err = f.WriteString(content); err != nil {
+		fatalExit(err.Error())
+	}
 }
