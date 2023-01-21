@@ -1,10 +1,53 @@
 package textract
 
 import (
+	"archive/zip"
 	"fmt"
+	"io"
+	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 )
+
+var UNZIPPED_DIR = ""
+
+func extractArchiveContent(path string) (*[]string, error) {
+
+	ar, err := zip.OpenReader(path)
+	if err != nil {
+		return nil, err
+	}
+	defer ar.Close()
+
+	dst := UNZIPPED_DIR
+
+	for _, f := range ar.File {
+
+		dstPath := filepath.Join(dst, f.Name)
+
+		dir := filepath.Dir(dstPath)
+		if dir != "" {
+			createDir(dir)
+		}
+
+		mf, err := f.Open()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		dstFile, err := os.OpenFile(dstPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		if _, err := io.Copy(dstFile, mf); err != nil {
+			log.Fatal(err)
+		}
+
+		mf.Close()
+	}
+}
 
 func getFileType(fp string) (string, error) {
 
