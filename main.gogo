@@ -1,0 +1,72 @@
+package main
+
+import (
+	"archive/zip"
+	"fmt"
+	"io"
+	"log"
+	"os"
+	"path/filepath"
+	"strings"
+)
+
+type Document interface {
+	FileType() string
+}
+
+type WordDoc struct {
+}
+
+type PDFDoc struct {
+}
+
+
+
+func main() {
+
+	fp := os.Args[1]
+
+	ar, err := zip.OpenReader(fp)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer ar.Close()
+
+	dst := "unzipped_output"
+
+	for i, file := range ar.File {
+
+		filePath := filepath.Join(dst, file.Name)
+
+		if !strings.HasPrefix(filePath, filepath.Clean(dst)+string(os.PathSeparator)) {
+			fmt.Println("invalid file path")
+			return
+		}
+
+		if file.FileInfo().IsDir() {
+			fmt.Println("creating directory...")
+			os.MkdirAll(filePath, os.ModePerm)
+			continue
+		}
+
+		log.Printf("File #%d: %s", i, file.Name)
+
+		mFile, err := file.Open()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		dstFile, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, file.Mode())
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		if _, err := io.Copy(dstFile, mFile); err != nil {
+			log.Fatal(err)
+		}
+
+		mFile.Close()
+	}
+
+	log.Printf("Program exiting cleanly")
+}

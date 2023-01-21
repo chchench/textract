@@ -1,8 +1,13 @@
-package textract
+// package extract
+package main
 
 import (
 	"encoding/xml"
 )
+
+/***************************************************************************
+    XML structure based on public information and reverse engineering
+***************************************************************************/
 
 // Not sure if the XML structure is really as simple as below, but based on
 // limited reverse-engineering done so far, this appears to be the case.
@@ -28,24 +33,28 @@ type Docx_Run struct {
 	Text    string   `xml:"t"`
 }
 
+/***************************************************************************
+      Data structure for various data parsed from this document type
+***************************************************************************/
+
 type Docx struct {
-	Filepath  string
-	Extension string
-	Content   []string
+	Filepath string
+	Content  []MemberFileContent
 }
+
+/***************************************************************************
+               Functions required for the document interface
+***************************************************************************/
 
 func extension() string {
-
+	return "TBD"
 }
 
-func trueType() string {
+func xml2Text(identifier string, byteData []byte) (string, error) {
 
-}
-
-func doc2Text(xml string) (string, error) {
 	doc := Docx_Doc{}
-	if err = xml.Unmarshal(byteValue, &doc); err != nil {
-		fatalExit(err.Error())
+	if err := xml.Unmarshal(byteData, &doc); err != nil {
+		return "", err
 	}
 
 	var text string
@@ -63,5 +72,5 @@ func doc2Text(xml string) (string, error) {
 		}
 	}
 
-	return text, err
+	return text, nil
 }
