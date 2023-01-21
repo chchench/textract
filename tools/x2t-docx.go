@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/xml"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -31,38 +32,71 @@ type Run struct {
 	Text    string   `xml:"t"`
 }
 
+var (
+	outputPath = flag.String("outfile", "", "Path of file to dump into. If empty, output to standard out.")
+	inputPath  = flag.String("infile", "", "Path of file to dump")
+)
+
 func main() {
 
-	xmlFile, err := os.Open("./output/word/document.xml")
+	flag.Parse()
 
-	if err != nil {
-		fmt.Println(err)
+	if *inputPath == "" {
+		fatalExit("Must specify an input file path")
 	}
 
-	fmt.Println("Successfully opened input file")
+	xmlFile, err := os.Open(*inputPath)
+	if err != nil {
+		fatalExit(err.Error())
+
+	}
 	defer xmlFile.Close()
 
-	byteValue, _ := ioutil.ReadAll(xmlFile)
+	byteValue, err := ioutil.ReadAll(xmlFile)
+	if err != nil {
+		fatalExit(err.Error())
+	}
 
 	doc := Doc{}
-	xml.Unmarshal(byteValue, &doc)
+	if err = xml.Unmarshal(byteValue, &doc); err != nil {
+		fatalExit(err.Error())
+	}
+
+	var text string
 
 	// Each document probably only has one (1) body, but let's still
 	// iterate thru for now until we're certain.
 
-	text := ""
-
 	for i := 0; i < len(doc.Bodies); i++ {
 		for j := 0; j < len(doc.Bodies[i].Paragraphs); j++ {
-
 			t := ""
 			for k := 0; k < len(doc.Bodies[i].Paragraphs[j].Runs); k++ {
 				text += doc.Bodies[i].Paragraphs[j].Runs[k].Text
 			}
-
 			text += t + "\n"
 		}
 	}
 
-	fmt.Println(text)
+	if *outputPath == "" {
+		fmt.Println(text)
+	} else {
+		dump(*outputPath, text)
+	}
+}
+
+func fatalExit(msg string) {
+	fmt.Fprintln(os.Stderr, msg)
+	os.Exit(1)
+}
+
+func dump(path, content string) {
+	f, err := os.Create(path)
+	if err != nil {
+		fatalExit(err.Error())
+	}
+	defer f.Close()
+
+	if _, err = f.WriteString(content); err != nil {
+		fatalExit(err.Error())
+	}
 }
