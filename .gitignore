@@ -1,5 +1,6 @@
 .DS_Store
 temp/
 main.go
+*.gogo
 textract.code-workspace
 output-pptx/

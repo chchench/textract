@@ -3,15 +3,13 @@ all: clean test
 build: build-tools
 
 build-tools:
-	(cd tools; go build -o dumpdocx dumpdocx.go)
-	(cd tools; go build -o x2t-docx x2t-docx.go)
-	(cd tools; go build -o x2t-pptx x2t-pptx.go)
+	(cd tools; go build -o dumparchive src/dumparchive.go)
+	(cd tools; go build -o pptx src/pptx.go)
 
 test: build
 	@echo "***** UNIT TESTS NOT YET PROVIDED *****"
 
 clean:
-	rm -f ./tools/{dumpdocx,x2t-docx,x2t-pptx}
-	rm -rf ./output
+	rm -f ./tools/{dumparchive,pptx}
 
 .PHONY: all build test clean

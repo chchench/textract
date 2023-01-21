@@ -4,6 +4,10 @@ import (
 	"encoding/xml"
 )
 
+/***************************************************************************
+    XML structure based on public information and reverse engineering
+***************************************************************************/
+
 // Not sure if the XML structure is really as simple as below, but based on
 // limited reverse-engineering done so far, this appears to be the case.
 // Will need to enhance testing over time to confirm.
@@ -28,24 +32,61 @@ type Docx_Run struct {
 	Text    string   `xml:"t"`
 }
 
-type Docx struct {
-	Filepath  string
-	Extension string
-	Content   []string
+/***************************************************************************
+      Data structure for various data parsed from this document type
+***************************************************************************/
+
+type DocxParser struct {
+	Content []MemberFileContent
 }
 
-func extension() string {
+/***************************************************************************
+               Functions required for the document interface
+***************************************************************************/
 
+func (d *DocxParser) extension() string {
+	return ".docx"
 }
 
-func trueType() string {
-
+func (d *DocxParser) trueType() string {
+	return "application/zip"
 }
 
-func doc2Text(xml string) (string, error) {
+func (d *DocxParser) filter(identifier string) bool {
+	return identifier == "word/document.xml"
+}
+
+func (d *DocxParser) readFile(path string) error {
+	list, err := ExtractArchiveContent(path, d.filter)
+	if err != nil {
+		return err
+	}
+
+	d.Content = *list
+
+	return nil
+}
+
+func (d *DocxParser) retrieveTextFromFile() (string, error) {
+	overallText := ""
+
+	for _, mfc := range d.Content {
+		text, err := d.docXML2Text(mfc.Identifier, mfc.Data)
+		if err != nil {
+			return "", err
+		}
+		overallText += text
+	}
+
+	return overallText, nil
+}
+
+func (d *DocxParser) docXML2Text(identifier string, byteData []byte) (string, error) {
+
 	doc := Docx_Doc{}
-	if err = xml.Unmarshal(byteValue, &doc); err != nil {
-		fatalExit(err.Error())
+
+	if err := xml.Unmarshal(byteData, &doc); err != nil {
+		return "", err
 	}
 
 	var text string
@@ -63,5 +104,5 @@ func doc2Text(xml string) (string, error) {
 		}
 	}
 
-	return text, err
+	return text, nil
 }

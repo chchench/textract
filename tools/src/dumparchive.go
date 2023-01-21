@@ -1,13 +1,13 @@
-package main
+package dumparchive
 
 import (
-	"archive/zip"
 	"flag"
 	"fmt"
-	"io"
 	"log"
 	"os"
 	"path/filepath"
+
+	"github.com/chchench/textract"
 )
 
 var (
@@ -20,44 +20,42 @@ func main() {
 	flag.Parse()
 
 	if *target == "" {
-		fmt.Fprintf(os.Stderr, "An input filename/path should be specified using the -file flag\n")
-		os.Exit(1)
+		log.Fatal("An input filename/path should be specified using the -file flag\n")
+	}
+
+	ft, _ := textract.GetTrueFileType(*target)
+	if ft != "application/zip" {
+		log.Fatal("This file is not an archive\n")
 	}
 
 	createDir(*outputDir)
 
-	ar, err := zip.OpenReader(*target)
+	list, err := textract.ExtractArchiveContent(*target, func(string) bool { return true })
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Unable to extract file archive content\n")
 	}
-	defer ar.Close()
 
 	dst := *outputDir
 
-	for _, f := range ar.File {
+	for _, f := range *list {
 
-		dstPath := filepath.Join(dst, f.Name)
+		dstPath := filepath.Join(dst, f.Identifier)
 
 		dir := filepath.Dir(dstPath)
 		if dir != "" {
 			createDir(dir)
 		}
 
-		mf, err := f.Open()
+		dstFile, err := os.Create(dstPath)
 		if err != nil {
-			log.Fatal(err)
+			log.Fatal(err.Error())
 		}
 
-		dstFile, err := os.OpenFile(dstPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
-		if err != nil {
-			log.Fatal(err)
+		if _, err := dstFile.Write(f.Data); err != nil {
+			log.Fatal(err.Error())
 		}
 
-		if _, err := io.Copy(dstFile, mf); err != nil {
-			log.Fatal(err)
-		}
-
-		mf.Close()
+		dstFile.Close()
 	}
 
 	fmt.Println("Program finished successfully")
