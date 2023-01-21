@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"path/filepath"
+	"strings"
 )
 
 var UNZIPPED_DIR = ""
@@ -23,6 +25,10 @@ func getTrueFileType(fp string) (string, error) {
 	}
 
 	return http.DetectContentType(buf), nil
+}
+
+func getFileExtension(filename string) string {
+	return strings.ToLower(filepath.Ext(filename))
 }
 
 func fatalExit(msg string) {

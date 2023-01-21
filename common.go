@@ -6,9 +6,11 @@ import (
 	"io"
 )
 
-type document interface {
+type DocumentParser interface {
 	extension() string
-	xml2Text(string, []byte) (string, error)
+	trueType() string
+	readFile(string) error
+	retrieveTextFromFile() (string, error)
 }
 
 type Filter func(string) bool

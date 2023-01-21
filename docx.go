@@ -37,22 +37,55 @@ type Docx_Run struct {
       Data structure for various data parsed from this document type
 ***************************************************************************/
 
-type Docx struct {
-	Filepath string
-	Content  []MemberFileContent
+type DocxParser struct {
+	Content []MemberFileContent
 }
 
 /***************************************************************************
                Functions required for the document interface
 ***************************************************************************/
 
-func extension() string {
-	return "TBD"
+func (d *DocxParser) extension() string {
+	return ".docx"
 }
 
-func xml2Text(identifier string, byteData []byte) (string, error) {
+func (d *DocxParser) trueType() string {
+	return "application/zip"
+}
+
+func (d *DocxParser) filter(identifier string) bool {
+	return identifier == "word/document.xml"
+}
+
+func (d *DocxParser) readFile(path string) error {
+	list, err := extractArchiveContent(path, d.filter)
+	if err != nil {
+		return err
+	}
+
+	d.Content = *list
+
+	return nil
+}
+
+func (d *DocxParser) retrieveTextFromFile() (string, error) {
+	overallText := ""
+
+	for _, mfc := range d.Content {
+		text, err := d.docXML2Text(mfc.Identifier, mfc.Data)
+		if err != nil {
+			return "", err
+		}
+		overallText += text
+	}
+
+	return overallText, nil
+}
+
+func (d *DocxParser) docXML2Text(identifier string, byteData []byte) (string, error) {
 
 	doc := Docx_Doc{}
+
 	if err := xml.Unmarshal(byteData, &doc); err != nil {
 		return "", err
 	}
