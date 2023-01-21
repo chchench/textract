@@ -25,7 +25,7 @@ type MemberFileContent struct {
 	Data       []byte
 }
 
-func extractArchiveContent(path string, filter Filter) (*[]MemberFileContent, error) {
+func ExtractArchiveContent(path string, filter Filter) (*[]MemberFileContent, error) {
 
 	ar, err := zip.OpenReader(path)
 	if err != nil {
@@ -66,7 +66,7 @@ func extractArchiveContent(path string, filter Filter) (*[]MemberFileContent, er
 	return &list, nil
 }
 
-func getTrueFileType(fp string) (string, error) {
+func GetTrueFileType(fp string) (string, error) {
 
 	f, err := os.Open(fp)
 	if err != nil {
@@ -83,23 +83,23 @@ func getTrueFileType(fp string) (string, error) {
 	return http.DetectContentType(buf), nil
 }
 
-func getFileExtension(filename string) string {
+func GetFileExtension(filename string) string {
 	return strings.ToLower(filepath.Ext(filename))
 }
 
-func fatalExit(msg string) {
+func FatalExit(msg string) {
 	fmt.Fprintln(os.Stderr, msg)
 	os.Exit(1)
 }
 
-func dump(path, content string) {
+func Dump(path, content string) {
 	f, err := os.Create(path)
 	if err != nil {
-		fatalExit(err.Error())
+		FatalExit(err.Error())
 	}
 	defer f.Close()
 
 	if _, err = f.WriteString(content); err != nil {
-		fatalExit(err.Error())
+		FatalExit(err.Error())
 	}
 }

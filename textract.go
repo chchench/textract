@@ -6,12 +6,12 @@ import (
 
 func RetrieveTextFromFile(path string) (string, error) {
 
-	ft, err := getTrueFileType(path)
+	ft, err := GetTrueFileType(path)
 	if err != nil {
 		return "", err
 	}
 
-	ext := getFileExtension(path)
+	ext := GetFileExtension(path)
 
 	p1 := DocxParser{}
 	parsers := []DocumentParser{&p1}
@@ -27,5 +27,5 @@ func RetrieveTextFromFile(path string) (string, error) {
 		}
 	}
 
-	return "", errors.New("Unsupported file format")
+	return "", errors.New("unsupported file format")
 }

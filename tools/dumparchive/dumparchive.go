@@ -1,4 +1,4 @@
-package main
+package dumparchive
 
 import (
 	"flag"
@@ -6,6 +6,8 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+
+	"github.com/chchench/textract"
 )
 
 var (
@@ -18,18 +20,19 @@ func main() {
 	flag.Parse()
 
 	if *target == "" {
-		fatalExit("An input filename/path should be specified using the -file flag\n")
+		log.Fatal("An input filename/path should be specified using the -file flag\n")
 	}
 
-	if getTrueFileType(*target) != "application/zip" {
-		fatalExit("This file is not an archive\n")
+	ft, _ := textract.GetTrueFileType(*target)
+	if ft != "application/zip" {
+		log.Fatal("This file is not an archive\n")
 	}
 
 	createDir(*outputDir)
 
-	list, err := extractArchiveContent(*target, func(string) bool { return true })
+	list, err := textract.ExtractArchiveContent(*target, func(string) bool { return true })
 	if err != nil {
-		fatalExit("Unable to extract file archive content\n")
+		log.Fatal("Unable to extract file archive content\n")
 	}
 
 	dst := *outputDir
@@ -45,11 +48,11 @@ func main() {
 
 		dstFile, err := os.Create(dstPath)
 		if err != nil {
-			fatalExit(err.Error())
+			log.Fatal(err.Error())
 		}
 
 		if _, err := dstFile.Write(f.Data); err != nil {
-			fatalExit(err.Error())
+			log.Fatal(err.Error())
 		}
 
 		dstFile.Close()

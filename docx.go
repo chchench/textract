@@ -58,7 +58,7 @@ func (d *DocxParser) filter(identifier string) bool {
 }
 
 func (d *DocxParser) readFile(path string) error {
-	list, err := extractArchiveContent(path, d.filter)
+	list, err := ExtractArchiveContent(path, d.filter)
 	if err != nil {
 		return err
 	}
