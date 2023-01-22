@@ -3,14 +3,16 @@ all: clean test
 build: build-tools
 
 build-tools:
-	(cd tools/src; go build -o ../dumparchive dumparchive.go)
-	(cd tools/src; go build -o ../pptx pptx.go)
-	(cd tools/src; go build -o ../extract extract.go)
+	(cd tool-dumparchive; go build dumparchive.go)
+	(cd tool-extract; go build extract.go)
+	(cd tool-pptx; go build pptx.go)
 
 test: build
 	@echo "***** UNIT TESTS NOT YET PROVIDED *****"
 
 clean:
-	rm -f ./tools/{dumparchive,pptx,extract}
+	rm -f tool-dumparchive/dumparchive
+	rm -f tool-extract/extract
+	rm -f tool-pptx/pptx
 
 .PHONY: all build test clean
