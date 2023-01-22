@@ -1,4 +1,4 @@
-package dumparchive
+package main
 
 import (
 	"flag"

@@ -14,9 +14,8 @@ func RetrieveTextFromFile(path string) (string, error) {
 	ext := GetFileExtension(path)
 
 	docx := DocxParser{}
-	pptx := PptxParser{}
 
-	parsers := []DocumentParser{&docx, &pptx}
+	parsers := []DocumentParser{&docx}
 
 	for _, p := range parsers {
 		if ft == p.trueType() && ext == p.extension() {
