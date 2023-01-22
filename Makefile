@@ -3,9 +3,9 @@ all: clean test
 build: build-tools
 
 build-tools:
-	(cd tools; go build -o dumparchive src/dumparchive.go)
-	(cd tools; go build -o pptx src/pptx.go)
-	(cd tools; go build -o extract src/extract.go)
+	(cd tools/src; go build -o ../dumparchive dumparchive.go)
+	(cd tools/src; go build -o ../pptx pptx.go)
+	(cd tools/src; go build -o ../extract extract.go)
 
 test: build
 	@echo "***** UNIT TESTS NOT YET PROVIDED *****"

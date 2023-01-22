@@ -1,4 +1,4 @@
-package x2tpptx
+package main
 
 import (
 	"encoding/xml"

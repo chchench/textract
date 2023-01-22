@@ -68,7 +68,7 @@ func (d *PptxParser) trueType() string {
 }
 
 func (d *PptxParser) filter(identifier string) bool {
-	return identifier == "word/document.xml"
+	return true
 }
 
 func (d *PptxParser) readFile(path string) error {
