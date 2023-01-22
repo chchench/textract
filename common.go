@@ -4,7 +4,6 @@ import (
 	"archive/zip"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -57,8 +56,6 @@ func ExtractArchiveContent(path string, filter Filter) (*[]MemberFileContent, er
 			Identifier: f.Name,
 			Data:       buf,
 		}
-
-		log.Println(string(mfc.Data))
 
 		list = append(list, *mfc)
 

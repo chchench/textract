@@ -1,4 +1,4 @@
-package extract
+package main
 
 import (
 	"fmt"
@@ -8,6 +8,7 @@ import (
 )
 
 func main() {
+
 	text, err := textract.RetrieveTextFromFile(os.Args[1])
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%s\n", err.Error())
