@@ -1,5 +1,4 @@
-# textract
-
+Still very early in the development of this code. Will need to find the time to work on it :)
 
 
 References
