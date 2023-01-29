@@ -8,7 +8,7 @@ build-tools:
 	(cd tool-pptx; go build pptx.go)
 
 test: build
-	@echo "***** UNIT TESTS NOT YET PROVIDED *****"
+	go test -v
 
 clean:
 	rm -f tool-dumparchive/dumparchive
