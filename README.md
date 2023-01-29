@@ -1,12 +1,24 @@
 Still very early in the development of this code. Will need to find the time to work on it :)
 
+## Description
 
-References
+A simple library to extract text content from popular document types, such as Word, PowerPoint, Excel, PDF, etc.
 
-https://docs.fileformat.com/word-processing/docx/
+Started developing this module because I need it for another application I've been building and am looking for something that is royalty-free and high performance. I intend to add support for additional document types over time.
 
-https://learn.microsoft.com/en-us/openspecs/office_standards/ms-docx/b839fe1f-e1ca-4fa6-8c26-5954d0abbccd
+*This initial version only supports Word/docx documents.*
 
-https://www.toptal.com/xml/an-informal-introduction-to-docx
+## Installation
 
-https://interoperability.blob.core.windows.net/files/MS-DOCX/%5bMS-DOCX%5d-220304.pdf
+After you have installed go, run this command to install the `textract` package:
+
+    go get github.com/chchench/textract
+
+## Roadmap
+
+* 1.0.0 - Initial release supports text extraction from (post 2007) Word/docx files
+
+## License
+
+Making the source code to this app available under
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
